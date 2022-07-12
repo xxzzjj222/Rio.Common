@@ -1,9 +1,49 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <SignAssembly>False</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)rio.snk</AssemblyOriginatorKeyFile>
+    <Authors>Rio</Authors>
+    <Company>Rio</Company>
+    <Description>common netfx and netstandard libarary,extensions helpers and useful utilities</Description>
+    <Copyright>Copyright 2022-$([System.DateTime]::Now.Year) (c) Rio</Copyright>
+    <PackageTags>common utility lib libarary extensions helper</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <EnableNETAnalyzers>False</EnableNETAnalyzers>
+	  <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
+    <DefineConstants>;ValueTaskSupport</DefineConstants>
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
+    <DefineConstants>;ValueTaskSupport</DefineConstants>
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
+    <DefineConstants>;ValueTaskSupport</DefineConstants>
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
+    <DefineConstants>;ValueTaskSupport</DefineConstants>
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <NoWarn>$(NoWarn);NU5048;CS1591</NoWarn>
   </PropertyGroup>
 
 </Project>
