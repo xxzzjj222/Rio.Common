@@ -109,7 +109,43 @@ public static class ConfigurationExtension
     {
         return configuration.GetAppSetting(key).ToOrDefault<T>(defaultValueFactory);
     }
-    
+
     #endregion GetAppSetting
+
+    #region FeatureFlag
+
+    /// <summary>
+    /// Feature flags configuration section name, FeatureFlags by default.
+    /// </summary>
+    public static string FeatureFlagsSectionName = "FeatureFlags";
+
+    /// <summary>
+    /// FeatureFlag extension, (FeatureFlags:Feature) is feature enabled.
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <param name="featureFlagName"></param>
+    /// <param name="featureFlagValue"></param>
+    /// <returns></returns>
+    public static bool TryGetFeatureFlagValue(this IConfiguration configuration,string featureFlagName,out bool featureFlagValue)
+    {
+        featureFlagValue = false;
+        var section = configuration.GetSection(FeatureFlagsSectionName);
+        if(section.Exists())
+        {
+            return bool.TryParse(section[featureFlagName], out featureFlagValue);
+        }
+        return false;
+    }
+
+    public static bool IsFeatureEnabled(this IConfiguration configuration,string featureFlagName,bool defaultValue=false)
+    {
+        if(TryGetFeatureFlagValue(configuration,featureFlagName,out var value))
+        {
+            return value;
+        }
+        return defaultValue;
+    }
+    
+    #endregion FeatureFlag
 }
 
