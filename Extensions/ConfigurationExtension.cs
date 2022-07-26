@@ -84,7 +84,32 @@ public static class ConfigurationExtension
         var value = configuration.GetSection("AppSetting")?[key];
         return Guard.NotNull(value, nameof(key));
     }
+
+    public static string? GetAppSetting(this IConfiguration configuration,string key)
+    {
+        return configuration.GetSection("AppSetting")?[key];
+    }
+
+    public static string GetAppSetting(this IConfiguration configuration,string key,string defaultValue)
+    {
+        return configuration.GetSection("AppSetting")?[key] ?? defaultValue;
+    }
+
+    public static T GetAppSetting<T>(this IConfiguration configuration,string key)
+    {
+        return configuration.GetAppSetting(key).To<T>();
+    }
+
+    public static T  GetAppSetting<T>(this IConfiguration configuration,string key,T defaultValue)
+    {
+        return configuration.GetAppSetting(key).ToOrDefault(defaultValue);
+    }
+
+    public static T GetAppSetting<T>(this IConfiguration configuration,string key,Func<T> defaultValueFactory)
+    {
+        return configuration.GetAppSetting(key).ToOrDefault<T>(defaultValueFactory);
+    }
     
-    #endregion
+    #endregion GetAppSetting
 }
 
