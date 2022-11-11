@@ -22,5 +22,17 @@ namespace Rio.Common
 #endif
             return t;
         }
+
+        public static string NotNullOrEmpty([NotNull] string? str,
+        [CallerArgumentExpression("str")]
+            string? paramName = null)
+        {
+            NotNull(str, paramName);
+            if (str.Length == 0)
+            {
+                throw new ArgumentException("The argument can not be Empty", paramName);
+            }
+            return str;
+        }
     }
 }

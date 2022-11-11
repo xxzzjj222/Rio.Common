@@ -131,7 +131,7 @@ public static class CoreExtension
 
     public static string GetString(this byte[]? byteArray) => byteArray.HasValue() ? byteArray.GetString(Encoding.UTF8) : string.Empty;
 
-    public static string GetString(this byte[]? byteArray, Encoding encoding) => encoding.GetString(byteArray);
+    public static string GetString(this byte[] byteArray, Encoding encoding) => encoding.GetString(byteArray);
 
     #endregion ByteArray
 
@@ -1203,7 +1203,9 @@ public static class CoreExtension
     public static object? GetDefaultValue(this Type type)
     {
         Guard.NotNull(type, nameof(type));
-        return type.IsValueType && type != typeof(void) ? DefaultValues.GetOrAdd(type, Activator.CreateInstance) : null;
+        return type.IsValueType && type != typeof(void)
+            ? DefaultValues.GetOrAdd(type, Activator.CreateInstance)
+            : null;
     }
 
     public static T? CreateInstance<T>(this Type @this, params object?[]? args) => (T?)Activator.CreateInstance(@this, args);
