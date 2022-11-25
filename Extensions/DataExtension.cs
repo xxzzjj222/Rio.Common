@@ -387,7 +387,9 @@ public static partial class DataExtension
         }
         command.AttachDbParameters(paramInfo);
 
-        commnad
+        CommandLogAction?.Invoke(CommandLogFormatterFunc(command));
+
+        return command;
     }
 
     #endregion DbCommand
