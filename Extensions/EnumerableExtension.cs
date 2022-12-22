@@ -1,4 +1,5 @@
 ﻿using Rio.Common;
+using Rio.Common.Models;
 using System.Collections.ObjectModel;
 
 namespace Rio.Extensions;
@@ -144,7 +145,30 @@ public static class EnumerableExtension
 
     #region ToPagedList
 
+    public static IListResultWithTotal<T> ToListResultWithTotal<T>(this IEnumerable<T> data, int totalCount)
+        => new ListResultWithTotal<T>
+        {
+            TotalCount = totalCount,
+            Data = data is IReadOnlyList<T> dataList ? dataList : data.ToArray()
+        };
 
+    public static IPageListResult<T> ToPageList<T>(this IEnumerable<T> data, int pageNumber, int pageSize, int totalCount)
+        => new PageListResult<T>
+        {
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Data = data is IReadOnlyList<T> dataList ? dataList : data.ToArray()
+        };
+
+    public static IPageListResult<T> ToPageListResult<T>(this IReadOnlyList<T> data, int pageNumber, int pageSize, int totalCount)
+        => new PageListResult<T>
+        {
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            Data = data
+        };
 
     #endregion ToPagedList
 
