@@ -1,4 +1,6 @@
-﻿namespace Rio.Extensions;
+﻿using System.Text;
+
+namespace Rio.Extensions;
 public static class IOExtension
 {
     /// <summary>
@@ -20,5 +22,11 @@ public static class IOExtension
     public static Task WriteAsync(this Stream @this,byte[] byteArray)
     {
         return @this.WriteAsync(byteArray,0,byteArray.Length);
+    }
+
+    public static string ReadToEnd(this Stream @this,Encoding encoding)
+    {
+        using var sr=new StreamReader(@this,encoding);
+        return sr.ReadToEnd();
     }
 }
