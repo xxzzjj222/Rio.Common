@@ -1,11 +1,16 @@
-﻿using System;
+﻿using Rio.Common.Http;
+using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 
-namespace Rio.Common.Extensions;
+namespace Rio.Extensions;
 
 public static class HttpRequesterExtension
 {
-    public static IHttpRequester
+    public static IHttpRequester WithCookie(this IHttpRequester httpRequester,CookieCollection cookies)
+    {
+        return httpRequester.WithCookie(cookies);
+    }
 }
 

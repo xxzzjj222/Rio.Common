@@ -55,7 +55,7 @@ public interface IHttpRequester
     IHttpRequester WithFile(string fileName, byte[] fileBytes, string fileKey = "file"
         , IEnumerable<KeyValuePair<string, string>>? fileFields = null);
 
-    IHttpRequester WithFile(IEnumerable<KeyValuePair<string, byte[]>> files
+    IHttpRequester WithFiles(IEnumerable<KeyValuePair<string, byte[]>> files
         , IEnumerable<KeyValuePair<string, string>>? fileFields = null);
 
     #endregion Parameter

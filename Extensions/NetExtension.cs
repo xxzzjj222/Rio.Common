@@ -12,6 +12,24 @@ public static class NetExtension
         return response.ReadToEnd();
     }
 
+    public static async Task<string> GetResponseStringAsync(this WebRequest @this)
+    {
+        using var response = await @this.GetResponseAsync().ConfigureAwait(false);
+        return await response.ReadToEndAsync().ConfigureAwait(false);
+    }
+
+    public static string GetResponseStringSafe(this WebRequest @this)
+    {
+        using var response=@this.GetResponseSafe();
+        return response.ReadToEnd();
+    }
+
+    public static async Task<string> GetResponseStringSafeAsync(this WebRequest @this)
+    {
+        using var response = await @this.GetResponseSafeAsync();
+        return await response.ReadToEndAsync();
+    }
+
     public static byte[] GetResponseBytesSafe(this WebRequest @this)
     {
         using var response = @this.GetResponseSafe();
@@ -52,6 +70,12 @@ public static class NetExtension
     {
         using var stream = response.GetResponseStream()!;
         return stream.ReadToEnd(Encoding.UTF8);
+    }
+
+    public static async Task<string> ReadToEndAsync(this WebResponse response)
+    {
+        using var stream = response.GetResponseStream()!;
+        return await stream.ReadToEndAsync(Encoding.UTF8);
     }
 
     public static byte[] ReadAllBytes(this WebResponse response)

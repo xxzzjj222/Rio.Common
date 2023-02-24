@@ -29,4 +29,10 @@ public static class IOExtension
         using var sr=new StreamReader(@this,encoding);
         return sr.ReadToEnd();
     }
+
+    public static async Task<string> ReadToEndAsync(this Stream @this,Encoding encoding)
+    {
+        using var sr=new StreamReader(@this,encoding);
+        return await sr.ReadToEndAsync();
+    }
 }
