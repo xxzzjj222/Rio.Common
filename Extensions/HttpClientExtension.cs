@@ -1,9 +1,6 @@
-﻿
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Rio.Common;
 using Rio.Common.Http;
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace Rio.Extensions;

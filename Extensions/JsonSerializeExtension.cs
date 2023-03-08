@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Rio.Common;
 
 namespace Rio.Extensions;
 
@@ -61,4 +62,10 @@ public static class JsonSerializeExtension
         }
         return result;
     }
+
+    public static T JsonToObject<T>(this string jsonString)
+        => jsonString.JsonToObject<T>(null);
+
+    public static T JsonToObject<T>(this string jsonString, JsonSerializerSettings? settings)
+        => Guard.NotNull(JsonConvert.DeserializeObject<T>(jsonString, settings ?? DefaultSerializerSettings));
 }

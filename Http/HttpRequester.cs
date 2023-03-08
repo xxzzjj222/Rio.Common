@@ -1,6 +1,7 @@
 ﻿using Rio.Common.Helpers;
 using Rio.Extensions;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace Rio.Common.Http;
@@ -335,7 +336,7 @@ public class HttpClientHttpRequester:IHttpRequester
     private CookieContainer? _cookieContainer;
     private IWebProxy? _proxy;
 
-    private void BuilHttpClient()
+    private void BuildHttpClient()
     {
         var handler = new HttpClientHandler();
 
@@ -361,6 +362,48 @@ public class HttpClientHttpRequester:IHttpRequester
             handler.CookieContainer = _cookieContainer;
         }
         _client = new HttpClient(handler);
+    }
+
+    public byte[] ExecuteBytes()
+    {
+        BuildHttpClient();
+        return _client.SendAsync(_request)
+            .ContinueWith(res => res.Result.Content.ReadAsByteArrayAsync().ContinueWith(r => r.Result))
+            .Result.GetAwaiter().GetResult();
+    }
+
+    public async Task<byte[]> ExecuteBytesAsync()
+    {
+        BuildHttpClient();
+        var response = await _client.SendAsync(_request);
+        var result = await response.Content.ReadAsByteArrayAsync();
+        return result;
+    }
+
+    public HttpResponse ExecuteForResponse()
+    {
+        BuildHttpClient();
+        var response = _client.SendAsync(_request).Result;
+        var responseBytes = response.Content.ReadAsByteArrayAsync().Result;
+        return new HttpResponse
+        {
+            Headers = response.Headers.ToDictionary(x => x.Key, x => x.Value?.StringJoin(",")),
+            ResponseBytes = responseBytes,
+            StatusCode = response.StatusCode
+        };
+    }
+
+    public async Task<HttpResponse> ExecuteForResponseAsync()
+    {
+        BuildHttpClient();
+        var response=await _client.SendAsync(_request);
+        var responseBytes = await response.Content.ReadAsByteArrayAsync();
+        return new HttpResponse
+        {
+            Headers = response.Headers.ToDictionary(x => x.Key, x => x.Value?.StringJoin(",")),
+            ResponseBytes = responseBytes,
+            StatusCode = response.StatusCode
+        };
     }
 
     public IHttpRequester WithCookie(string? url,Cookie cookie)
@@ -401,5 +444,110 @@ public class HttpClientHttpRequester:IHttpRequester
         return this;
     }
 
+    public IHttpRequester WithFile(string fileName, byte[] fileBytes,string fileKey="file",IEnumerable<KeyValuePair<string,string>>? formFields=null)
+    {
+        var content = new MultipartFormDataContent($"form--{DateTime.Now.Ticks:X}");
 
+        if(formFields!=null)
+        {
+            foreach (var kv in formFields)
+            {
+                content.Add(new StringContent(kv.Value), kv.Key);
+            }
+        }
+
+        content.Add(new ByteArrayContent(fileBytes), fileKey, fileName);
+
+        _request.Content = content;
+
+        return this;
+    }
+
+    public IHttpRequester WithFiles(IEnumerable<KeyValuePair<string, byte[]>> files, IEnumerable<KeyValuePair<string, string>>? formFields = null)
+    {
+        var content = new MultipartFormDataContent($"form--{DateTime.Now.Ticks:X}");
+
+        if(formFields!=null)
+        {
+            foreach(var kv in formFields)
+            {
+                content.Add(new StringContent(kv.Value), kv.Key);
+            }
+        }
+
+        files.ForEach((file, idx) => content.Add(new ByteArrayContent(file.Value), $"{file.Key}_{idx}", file.Key));
+
+        _request.Content = content;
+
+        return this;
+    }
+
+    public IHttpRequester WithUrl(string url)
+    {
+        _request.RequestUri = new Uri(url);
+        return this;
+    }
+
+    public IHttpRequester WithMethod(HttpMethod method)
+    {
+        _request.Method = method;
+        return this;
+    }
+
+    public IHttpRequester WithHeaders(IEnumerable<KeyValuePair<string,string?>>? customHeaders)
+    {
+        if(customHeaders!=null)
+        {
+            foreach (var  header in customHeaders)
+            {
+                if(HttpHelper.IsWellKnownContentHeader(header.Key))
+                {
+                    _request.Content ??= new ByteArrayContent(Array.Empty<byte>());
+                    if(header.Value is null)
+                    {
+                        _request.Content.Headers.Remove(header.Key);
+                    }
+                    else
+                    {
+                        _request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+                else
+                {
+                    if(header.Value is null)
+                    {
+                        _request.Headers.Remove(header.Key);
+                    }
+                    else
+                    {
+                        _request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                    }
+                }
+            }
+        }
+
+        return this;
+    }
+
+    public IHttpRequester WithParameters(byte[] requestBytes,string contentType)
+    {
+        _request.Content = new ByteArrayContent(requestBytes);
+        _request.Content.Headers.ContentType=MediaTypeHeaderValue.Parse(contentType);
+
+        return WithHeaders(new Dictionary<string, string?> { { HttpKnownHeaderNames.ContentType, contentType } });
+    }
+
+    public IHttpRequester WithReferer(string referer)
+    {
+        _request.Headers.Referrer = new Uri(referer);
+        _request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.Referer, referer);
+
+        return this;
+    }
+
+    public IHttpRequester WithUserAgent(string  userAgent)
+    {
+        _request.Headers.TryAddWithoutValidation(HttpKnownHeaderNames.UserAgent, userAgent);
+        return this;
+    }
 }
