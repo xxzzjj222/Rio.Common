@@ -14,27 +14,6 @@ public static class JsonSerializeExtension
         NullValueHandling = NullValueHandling.Ignore
     };
 
-
-    public static string ToJsonOrString(this object? obj)
-    {
-        if(obj is null)
-        {
-            return string.Empty;
-        }
-        if(obj is string str)
-        {
-            return str;
-        }
-        if(obj.GetType().IsBasicType())
-        {
-            return Convert.ToString(obj) ?? string.Empty;
-        }
-        else
-        {
-            return obj.ToJson();
-        }
-    }
-
     public static string ToJson(this object? obj) => obj.ToJson(false, null);
 
     public static string ToJson(this object? obj, bool isConvertToSingleQuotes) => obj.ToJson(isConvertToSingleQuotes, null);
@@ -68,4 +47,58 @@ public static class JsonSerializeExtension
 
     public static T JsonToObject<T>(this string jsonString, JsonSerializerSettings? settings)
         => Guard.NotNull(JsonConvert.DeserializeObject<T>(jsonString, settings ?? DefaultSerializerSettings));
+
+    public static string ToJsonOrString(this object? obj)
+    {
+        if(obj==null)
+        {
+            return string.Empty;
+        }
+        if(obj is string str)
+        {
+            return str;
+        }
+        if(obj.GetType().IsBasicType())
+        {
+            return obj.ToString();
+        }
+        return obj.ToJson();
+    }
+
+    public static T StringToType<T>(this string jsonString)
+    {
+        if(typeof(T)==typeof(string))
+        {
+            return (T)(object)jsonString;
+        }
+        if(typeof(T).IsBasicType())
+        {
+            return jsonString.To<T>();
+        }
+        return jsonString.StringToType<T>();
+    }
+
+    public static T StringToType<T>(this string jsonString,T defaultValue)
+    {
+        if(typeof(T)==typeof(string))
+        {
+            return (T)(object)jsonString;
+        }
+        if(typeof(T).IsBasicType())
+        {
+            return Guard.NotNull(jsonString.ToOrDefault<T>(defaultValue));
+        }
+        if(string.IsNullOrWhiteSpace(jsonString))
+        {
+            return defaultValue;
+        }
+        try
+        {
+            return jsonString.JsonToObject<T>();
+        }
+        catch
+        {
+            return defaultValue;
+        }
+    }
 }

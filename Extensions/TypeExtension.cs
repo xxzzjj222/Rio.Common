@@ -26,7 +26,9 @@ public static class TypeExtension
         typeof(DateTimeOffset),
 
         typeof(char),
-        typeof(string)//IsPrimitive:False
+        typeof(string),//IsPrimitive:False
+
+        //typeof(object),// IsPrimitive:False
     };
 
     public static bool IsBasicType(this Type type)
@@ -34,5 +36,8 @@ public static class TypeExtension
         var unWrappedType = type.Unwrap();
         return unWrappedType.IsEnum || BasicTypes.Contains(unWrappedType);
     }
+
+    public static bool IsValueTuple(this Type type)
+        => type.IsValueType && type.FullName?.StartsWith("System.ValueTuple`", StringComparison.OrdinalIgnoreCase) == true;
 }
 

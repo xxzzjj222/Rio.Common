@@ -674,7 +674,7 @@ public static class CoreExtension
             return (T)@this;
         }
         var converter = TypeDescriptor.GetConverter(sourceType);
-        if (converter.CanConvertFrom(targetType))
+        if (converter.CanConvertTo(targetType))
         {
             return (T)converter.ConvertTo(@this, targetType)!;
         }

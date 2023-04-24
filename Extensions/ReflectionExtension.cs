@@ -1,4 +1,6 @@
 ﻿using Rio.Common;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -104,5 +106,12 @@ public static class ReflectionExtension
     public static bool IsValueTuple<T>(this T t) => typeof(T).IsValueTuple();
 
     public static bool IsValueType<T>(this T t) => typeof(T).IsValueType;
+
+    public static string GetDisplayName(this MemberInfo @this)
+        => @this.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? @this.GetCustomAttribute<DisplayAttribute>()?.Name ?? @this.Name;
+
+    public static string GetDescription(this MemberInfo @this)
+        => @this.GetCustomAttribute<DescriptionAttribute>()?.Description ?? @this.Name;
+
 }
 

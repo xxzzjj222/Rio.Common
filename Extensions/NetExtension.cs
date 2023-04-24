@@ -6,6 +6,30 @@ namespace Rio.Extensions;
 
 public static class NetExtension
 {
+    public static WebResponse GetResponseSafe(this WebRequest @this)
+    {
+        try
+        {
+            return @this.GetResponse();
+        }
+        catch(WebException e)
+        {
+            return Guard.NotNull(e.Response);
+        }
+    }
+
+    public static async Task<WebResponse> GetResponseSafeAsync(this WebRequest @this)
+    {
+        try
+        {
+            return await @this.GetResponseAsync().ConfigureAwait(false);
+        }
+        catch(WebException e)
+        {
+            return Guard.NotNull(e.Response);
+        }
+    }
+
     public static string GetResponseString(this WebRequest @this)
     {
         using var response = @this.GetResponse();
@@ -40,30 +64,6 @@ public static class NetExtension
     {
         using var response = await @this.GetResponseSafeAsync().ConfigureAwait(false);
         return response.ReadAllBytes();
-    }
-
-    public static WebResponse GetResponseSafe(this WebRequest @this)
-    {
-        try
-        {
-            return @this.GetResponse();
-        }
-        catch (WebException e)
-        {
-            return Guard.NotNull(e.Response);
-        }
-    }
-
-    public static async Task<WebResponse> GetResponseSafeAsync(this WebRequest @this)
-    {
-        try
-        {
-            return await @this.GetResponseAsync().ConfigureAwait(false);
-        }
-        catch(WebException e)
-        {
-            return Guard.NotNull(e.Response);
-        }
     }
 
     public static string ReadToEnd(this WebResponse response)
